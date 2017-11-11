@@ -101,6 +101,8 @@ int main(void)
   /* If first word of user data page is non-zero, enable eA Profiler trace */
   BSP_TraceProfilerSetup();
 
+  BSP_LedsSet(0x0);
+
   /* When DVK is configured, and no more DVK access is needed, the interface can safely be disabled to save current */
 //  BSP_Disable();
 
@@ -127,22 +129,32 @@ int main(void)
       uartPutData((uint8_t*) overflowString, ofsLen);
     }
 
+    uint8_t chars[2] = {'o', 'f'};
+    int i = rand() % 2;
 
-	uint8_t i = rand() % 8;
-	uartPutData(&i, 1);
-	Delay(500);
+//    for (int i = 0; i < 2; i++) {
+//      uartPutData(&chars[i], 1);
+//      Delay(500);
+//    }
 
+    uartPutData(&chars[i], 1);
+    Delay(500);
 
-    /* Check if termination character is received */
-	if (rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\000' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\001' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\002' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\003' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\004' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\005' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\006' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\007')
-	{
-	  /* Copy received data to UART transmit queue */
-	  uint8_t tmpBuf[BUFFERSIZE];
-	  uartGetData(tmpBuf, 0);
-	  uint32_t led = 1;
-	  led = led << (int) tmpBuf[0];
-	  BSP_LedsSet(led);
-	}
+    /* Check if character is received */
+    if (rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == 'o' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == 'f' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\002' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\003' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\004' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\005' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\006' || rxBuf.data[(rxBuf.wrI - 1) % BUFFERSIZE] == '\007')
+    {
+      /* Copy received data to UART transmit queue */
+      uint8_t tmpBuf[BUFFERSIZE];
+      uartGetData(tmpBuf, 0);
+//      uint32_t led = 1;
+//      led = led << (int) tmpBuf[0];
+      if (tmpBuf[0] == 'o') {
+        BSP_LedsSet(0xff);
+      } else if (tmpBuf[0] == 'f') {
+        BSP_LedsSet(0x0);
+      }
+//      BSP_LedsSet(led);
+    }
 
 
   }
