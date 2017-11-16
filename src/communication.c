@@ -1,7 +1,7 @@
 #include "communication.h"
 
 
-void gpio_init(void) {
+void communication_init(void) {
   CMU_ClockEnable(cmuClock_GPIO, true);
 
   GPIO_PinModeSet(gpioPortC, 2, gpioModeInputPull, 0);

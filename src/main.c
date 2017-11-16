@@ -26,7 +26,6 @@ void wait_for_go(void) {
 void forward(void) {
   motor_forward(get_speed());
   // TODO: handle drift
-
 }
 
 
@@ -35,16 +34,11 @@ int main(void)
   /* Chip errata */
   CHIP_Init();
 
-  init_motors();
+  motor_init();
 
-  gpio_init();
+  communication_init();
 
-//  sensor_init();
-
-
-  int speed = 0;
-
-  uint32_t* sensor_values;
+  sensor_init();
 
   /* Infinite loop */
   while (1) {
@@ -54,6 +48,7 @@ int main(void)
         wait_for_go();
         break;
       case ST_FORWARD:
+        forward();
         break;
       case ST_CROSSROAD:
         break;

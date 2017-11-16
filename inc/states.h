@@ -5,8 +5,8 @@
  *      Author: haavahe
  */
 
-#ifndef INC_STATES_H_
-#define INC_STATES_H_
+#ifndef STATES_H_
+#define STATES_H_
 
 enum STATES {
   ST_WAIT_FOR_GO,
@@ -16,4 +16,4 @@ enum STATES {
   ST_STOP
 };
 
-#endif /* INC_STATES_H_ */
+#endif /* STATES_H_ */

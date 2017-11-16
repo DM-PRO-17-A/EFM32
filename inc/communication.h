@@ -30,7 +30,7 @@ enum CROSSROAD_DIRECTIONS {
 enum OUTPUT {CROSSROAD = 0x80, BUSY = 0x100, CROSSROAD_BUSY = 0x180};
 
 
-void gpio_init(void);
+void communication_init(void);
 
 void clear_comm_out(int pin);
 
