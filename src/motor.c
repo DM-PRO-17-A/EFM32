@@ -1,5 +1,10 @@
 #include "motor.h"
 
+int turn_speed_inner = 15;
+int turn_speed_outer = 50;
+uint16_t turn_duration = 3000;
+uint16_t uturn_duration = 6000;
+
 
 void mini_delay(uint16_t cycle_delay) {
   /* Reset Timer */
@@ -14,9 +19,9 @@ void mini_delay(uint16_t cycle_delay) {
 }
 
 void Delay(uint16_t Delay) {
+	int magic_number = 15; // Don't ask
   /* adjustment factor for 48MHz oscillator, based on the timing of this whole function with speed optimization on, could probably be done in a prettier way. */
-  int magic_number = 10; // Don't ask
-  uint32_t cycle_delay = Delay * 48 * magic_number;
+  uint32_t cycle_delay = Delay * 48 * magic_number - 28;
   if (cycle_delay > 65000) {
     int length = cycle_delay / 65000;
     for (int i = 0; i < length; i++) {
@@ -78,13 +83,13 @@ void motor_init(void) {
   TIMER2->CMD = 0x1;                                  // Start Timer2
 }
 
-void motor_set_speed(int speed) {
-  TIMER1->CC[0].CCVB = speed * 100;
-  TIMER2->CC[0].CCVB = speed * 100;
+void motor_set_speed(int left_speed, int right_speed) {
+  TIMER1->CC[0].CCVB = left_speed * 10;
+  TIMER2->CC[0].CCVB = right_speed * 10;
 }
 
-void motor_off(void) {
-  motor_set_speed(0);
+void motor_stop(void) {
+  motor_set_speed(0, 0);
   GPIO_PinOutClear(gpioPortC, AIN1);
   GPIO_PinOutClear(gpioPortC, AIN2);
   GPIO_PinOutClear(gpioPortC, BIN1);
@@ -94,28 +99,39 @@ void motor_off(void) {
 void motor_forward(int speed) {
   GPIO_PinOutSet(gpioPortC, AIN1);
   GPIO_PinOutClear(gpioPortC, AIN2);
-  GPIO_PinOutSet(gpioPortC, BIN1);
-  GPIO_PinOutClear(gpioPortC, BIN2);
+  GPIO_PinOutClear(gpioPortC, BIN1);
+  GPIO_PinOutSet(gpioPortC, BIN2);
 
-  motor_set_speed(speed);
+  motor_set_speed(speed, speed);
 }
 
-void motor_left(int speed, int duration) {
-  GPIO_PinOutClear(gpioPortC, AIN1);
-  GPIO_PinOutSet(gpioPortC, AIN2);
-  GPIO_PinOutSet(gpioPortC, BIN1);
-  GPIO_PinOutClear(gpioPortC, BIN2);
-
-  motor_set_speed(speed);
-  Delay(3000);
-}
-
-void motor_right(int speed, int duration) {
+void motor_left(void) {
   GPIO_PinOutSet(gpioPortC, AIN1);
   GPIO_PinOutClear(gpioPortC, AIN2);
   GPIO_PinOutClear(gpioPortC, BIN1);
   GPIO_PinOutSet(gpioPortC, BIN2);
 
-  motor_set_speed(speed);
-  Delay(3000);
+  motor_set_speed(turn_speed_outer, turn_speed_inner);
+  Delay(turn_duration);
+}
+
+void motor_right(void) {
+  GPIO_PinOutSet(gpioPortC, AIN1);
+  GPIO_PinOutClear(gpioPortC, AIN2);
+  GPIO_PinOutClear(gpioPortC, BIN1);
+  GPIO_PinOutSet(gpioPortC, BIN2);
+
+  motor_set_speed(turn_speed_inner, turn_speed_outer);
+  Delay(turn_duration);
+}
+
+void motor_u_turn(void) {
+  // In place u turn
+  GPIO_PinOutClear(gpioPortC, AIN1);
+  GPIO_PinOutSet(gpioPortC, AIN2);
+  GPIO_PinOutClear(gpioPortC, BIN1);
+  GPIO_PinOutSet(gpioPortC, BIN2);
+
+  motor_set_speed(turn_speed_outer, turn_speed_outer);
+  Delay(uturn_duration);
 }

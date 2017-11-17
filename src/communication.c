@@ -27,11 +27,11 @@ int get_speed(void) {
   int pins = GPIO_PortInGet(gpioPortC) & 0xc;
   switch (pins) {
     case FIFTY:
-      return 5;
+      return 50;
     case SEVENTY:
-      return 7;
+      return 70;
     case HUNDRED:
-      return 10;
+      return 100;
     default:
       return 0;
   }

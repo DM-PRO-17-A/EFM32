@@ -1,12 +1,12 @@
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#ifndef COMMUNICATION_H_
+#define COMMUNICATION_H_
 
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_gpio.h"
 #include "em_cmu.h"
 
-// From left to right PC4-PC2
+
 enum STOP_GO {
   STOP = 0x0,
   GO = 0x4000
@@ -22,7 +22,7 @@ enum SPEEDS {
 enum CROSSROAD_DIRECTIONS {
   LEFT = 0x20,
   RIGHT = 0x10,
-  UTURN = 0x30,
+  U_TURN = 0x30,
   FORWARD = 0x0
 };
 
@@ -42,6 +42,6 @@ int get_direction(void);
 
 int get_start_stop(void);
 
-#endif /* COMMUNICATION_H */
+#endif /* COMMUNICATION_H_ */
 
 
