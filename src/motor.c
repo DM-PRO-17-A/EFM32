@@ -3,7 +3,7 @@
 int turn_speed_inner = 15;
 int turn_speed_outer = 50;
 uint16_t turn_duration = 3000;
-uint16_t uturn_duration = 6000;
+uint16_t u_turn_duration = 6000;
 
 
 void mini_delay(uint16_t cycle_delay) {
@@ -55,10 +55,10 @@ void motor_init(void) {
   GPIO_PinModeSet(gpioPortC, BIN2, gpioModePushPull, 0);
   GPIO_PinModeSet(gpioPortC, PWMB, gpioModePushPull, 0);
 
-  GPIO_PinOutClear(gpioPortC, AIN1);
-  GPIO_PinOutClear(gpioPortC, AIN2);
-  GPIO_PinOutClear(gpioPortC, BIN1);
-  GPIO_PinOutClear(gpioPortC, BIN2);
+//  GPIO_PinOutClear(gpioPortC, AIN1);
+//  GPIO_PinOutClear(gpioPortC, AIN2);
+//  GPIO_PinOutClear(gpioPortC, BIN1);
+//  GPIO_PinOutClear(gpioPortC, BIN2);
 
   TIMER1->TOP = TOP_VAL_PWM;
   TIMER2->TOP = TOP_VAL_PWM;                          // PWM period will be 1ms = 1kHz freq
@@ -133,5 +133,14 @@ void motor_u_turn(void) {
   GPIO_PinOutSet(gpioPortC, BIN2);
 
   motor_set_speed(turn_speed_outer, turn_speed_outer);
-  Delay(uturn_duration);
+  Delay(u_turn_duration);
+}
+
+void motor_correct_left_drift(int speed) {
+  motor_set_speed(speed, speed - 10);
+  Delay(500);
+}
+
+void motor_correct_right_drift(int speed) {
+  motor_set_speed(speed - 10, speed);
 }

@@ -30,4 +30,8 @@ void motor_right(void);
 
 void motor_u_turn(void);
 
+void motor_correct_left_drift(int speed);
+
+void motor_correct_right_drift(int speed);
+
 #endif /* MOTOR_H_ */

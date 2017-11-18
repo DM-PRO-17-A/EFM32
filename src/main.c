@@ -2,10 +2,7 @@
 #include <stdio.h>
 #include "em_device.h"
 #include "em_chip.h"
-#include "em_cmu.h"
 #include "em_gpio.h"
-#include "em_emu.h"
-#include "em_adc.h"
 #include "tape.h"
 #include "communication.h"
 #include "motor.h"
@@ -23,6 +20,18 @@ void wait_for_go(void) {
   }
 }
 
+void step_forward(void) {
+  // Step the robot off the crossroad tape
+  clear_comm_out(CROSSROAD); // to pynq crossroad low
+  set_comm_out(BUSY); // to pynq busy high
+
+  motor_forward(get_speed());
+//  motor_forward(50); // test
+  Delay(500);
+
+  clear_comm_out(BUSY); // to pynq busy low
+}
+
 void forward(void) {
   motor_forward(get_speed());
 //  motor_forward(50); //test
@@ -35,11 +44,23 @@ void forward(void) {
     return;
   }
   // TODO: handle drift
+  if (detect_left_drift(sensor_values)) {
+    motor_correct_left_drift(get_speed());
+  } else if (detect_right_drift(sensor_values)) {
+    motor_correct_right_drift(get_speed());
+  }
 }
 
 void crossroad(void) {
   motor_stop();
+  set_comm_out(CROSSROAD); // to pynq crossroad high
   Delay(500);
+
+  if (get_start_stop() == STOP) {
+    next_state = ST_STOP;
+    return;
+  }
+
   switch (get_direction()) {
     case LEFT:
       next_state = ST_TURN_LEFT;
@@ -51,28 +72,35 @@ void crossroad(void) {
       next_state = ST_U_TURN;
       break;
     case FORWARD:
-      motor_forward(get_speed());
-//      motor_forward(50); // test
-      Delay(500);
+      step_forward();
       next_state = ST_FORWARD;
       break;
-//    default:
-//      next_state = ST_FORWARD;
+    default:
+      step_forward();
   }
 }
 
 void turn_left(void) {
+  clear_comm_out(CROSSROAD); // to pynq crossroad low
+  set_comm_out(BUSY); // to pynq busy high
   motor_left();
+  clear_comm_out(BUSY); // to pynq busy low
   next_state = ST_FORWARD;
 }
 
 void turn_right(void) {
+  clear_comm_out(CROSSROAD); // to pynq crossroad low
+  set_comm_out(BUSY); // to pynq busy high
   motor_right();
+  clear_comm_out(BUSY); // to pynq busy low
   next_state = ST_FORWARD;
 }
 
 void uturn(void) {
+  clear_comm_out(CROSSROAD); // to pynq crossroad low
+  set_comm_out(BUSY); // to pynq busy high
   motor_u_turn();
+  clear_comm_out(BUSY); // to pynq busy low
   next_state = ST_FORWARD;
 }
 
