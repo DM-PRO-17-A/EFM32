@@ -67,13 +67,32 @@ int detect_crossroad(uint32_t* sensor_values) {
 }
 
 int detect_left_drift(uint32_t* sensor_values) {
-  return sensor_values[3] > 1000 && sensor_values[4] < 1000;
+  return (sensor_values[0] < 1000) &&
+         (sensor_values[1] < 1000) &&
+         (sensor_values[3] > 1000) &&
+         (sensor_values[4] < 1000) &&
+         (sensor_values[5] < 1000) &&
+         (sensor_values[6] < 1000) &&
+         (sensor_values[7] < 1000);
 }
 
 int detect_right_drift(uint32_t* sensor_values) {
-  return sensor_values[4] > 1000 && sensor_values[3] < 1000;
+  return (sensor_values[7] < 1000) &&
+         (sensor_values[6] < 1000) &&
+         (sensor_values[4] > 1000) &&
+         (sensor_values[3] < 1000) &&
+         (sensor_values[2] < 1000) &&
+         (sensor_values[1] < 1000) &&
+         (sensor_values[0] < 1000);
 }
 
 int detect_road(uint32_t* sensor_values) {
-  return sensor_values[3] > 1000 && sensor_values[4] > 1000;
+  return (sensor_values[0] < 1000) &&
+		 (sensor_values[1] < 1000) &&
+		 (sensor_values[2] < 1000) &&
+		 (sensor_values[3] > 1000) &&
+         (sensor_values[4] > 1000) &&
+		 (sensor_values[5] < 1000) &&
+		 (sensor_values[6] < 1000) &&
+		 (sensor_values[7] < 1000);
 }

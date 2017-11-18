@@ -25,16 +25,16 @@ void step_forward(void) {
   clear_comm_out(CROSSROAD); // to pynq crossroad low
   set_comm_out(BUSY); // to pynq busy high
 
-  motor_forward(get_speed());
-//  motor_forward(50); // test
+//  motor_forward(get_speed());
+  motor_forward(50); // test override
   Delay(500);
 
   clear_comm_out(BUSY); // to pynq busy low
 }
 
 void forward(void) {
-  motor_forward(get_speed());
-//  motor_forward(50); //test
+//  motor_forward(get_speed());
+  motor_forward(50); //test
 
   uint32_t* sensor_values = get_sensor_values();
 
@@ -43,11 +43,13 @@ void forward(void) {
     next_state = ST_CROSSROAD;
     return;
   }
-  // TODO: handle drift
+  // handle drift
   if (detect_left_drift(sensor_values)) {
-    motor_correct_left_drift(get_speed());
+//    motor_correct_left_drift(get_speed());
+    motor_correct_left_drift(50); // test override
   } else if (detect_right_drift(sensor_values)) {
-    motor_correct_right_drift(get_speed());
+//    motor_correct_right_drift(get_speed());
+    motor_correct_right_drift(50); // test override
   }
 }
 
@@ -56,12 +58,13 @@ void crossroad(void) {
   set_comm_out(CROSSROAD); // to pynq crossroad high
   Delay(500);
 
-  if (get_start_stop() == STOP) {
-    next_state = ST_STOP;
-    return;
-  }
+//  if (get_start_stop() == STOP) {
+//    next_state = ST_STOP;
+//    return;
+//  }
 
-  switch (get_direction()) {
+//  switch (get_direction()) {
+  switch (LEFT) { // test override
     case LEFT:
       next_state = ST_TURN_LEFT;
       break;
@@ -69,7 +72,7 @@ void crossroad(void) {
       next_state = ST_TURN_RIGHT;
       break;
     case U_TURN:
-      next_state = ST_U_TURN;
+      next_state = ST_U_TURN_1;
       break;
     case FORWARD:
       step_forward();
@@ -83,34 +86,65 @@ void crossroad(void) {
 void turn_left(void) {
   clear_comm_out(CROSSROAD); // to pynq crossroad low
   set_comm_out(BUSY); // to pynq busy high
+  uint32_t* sensor_values = get_sensor_values();
   motor_left();
-  clear_comm_out(BUSY); // to pynq busy low
-  next_state = ST_FORWARD;
+  if (detect_road(sensor_values)) {
+    motor_stop();
+    Delay(500);
+    clear_comm_out(BUSY); // to pynq busy low
+    next_state = ST_FORWARD;
+  }
 }
 
 void turn_right(void) {
   clear_comm_out(CROSSROAD); // to pynq crossroad low
   set_comm_out(BUSY); // to pynq busy high
+  uint32_t* sensor_values = get_sensor_values();
   motor_right();
-  clear_comm_out(BUSY); // to pynq busy low
-  next_state = ST_FORWARD;
+  if (detect_road(sensor_values)) {
+    motor_stop();
+    Delay(500);
+    clear_comm_out(BUSY); // to pynq busy low
+    next_state = ST_FORWARD;
+  }
 }
 
-void uturn(void) {
+void u_turn_1(void) {
   clear_comm_out(CROSSROAD); // to pynq crossroad low
   set_comm_out(BUSY); // to pynq busy high
+  uint32_t* sensor_values = get_sensor_values();
   motor_u_turn();
-  clear_comm_out(BUSY); // to pynq busy low
-  next_state = ST_FORWARD;
+  if (detect_road(sensor_values)) {
+    next_state = ST_U_TURN_2;
+  }
+}
+
+void u_turn_2(void) {
+  uint32_t* sensor_values = get_sensor_values();
+  motor_u_turn();
+  if (!detect_road(sensor_values)) {
+    next_state = ST_U_TURN_3;
+  }
+}
+
+void u_turn_3(void) {
+  uint32_t* sensor_values = get_sensor_values();
+  motor_u_turn();
+  if (detect_road(sensor_values)) {
+    motor_stop();
+    Delay(500);
+    clear_comm_out(BUSY); // to pynq busy low
+    next_state = ST_FORWARD;
+  }
 }
 
 void test(void) {
   motor_forward(50);
   Delay(2000);
-
   motor_right();
-
+  Delay(2000);
   motor_left();
+  Delay(2000);
 }
 
 
@@ -125,10 +159,10 @@ int main(void)
 
   sensor_init();
 
-//  // test start
-//  GPIO_PinModeSet(gpioPortC, 15, gpioModeInputPull, 1);
-//  int button1;
-//  // test end
+  // test override start
+  GPIO_PinModeSet(gpioPortC, 15, gpioModeInputPull, 1);
+  int button1;
+  // test override end
 
   /* Infinite loop */
   while (1) {
@@ -139,7 +173,7 @@ int main(void)
         break;
       case ST_FORWARD:
         forward();
-//        test(); // test
+//        test(); // test override
         break;
       case ST_CROSSROAD:
         crossroad();
@@ -150,20 +184,26 @@ int main(void)
       case ST_TURN_RIGHT:
         turn_right();
 	    break;
-      case ST_U_TURN:
-        uturn();
+      case ST_U_TURN_1: // Part 1 of the u turn (detect road)
+        u_turn_1();
+        break;
+      case ST_U_TURN_2: // Part 2 of the u turn (not detect tape)
+        u_turn_2();
+        break;
+      case ST_U_TURN_3: // Part 3 of the u turn (detect tape)
+  	    u_turn_3();
         break;
       case ST_STOP:
         motor_stop();
         break;
     }
 
-//    // test start
-//    button1 = GPIO_PinInGet(gpioPortC, 15);
-//    if (button1 && current_state == ST_WAIT_FOR_GO) {
-//      next_state = ST_FORWARD;
-//    }
-//    // test end
+    // test override start
+    button1 = GPIO_PinInGet(gpioPortC, 15);
+    if ((button1 && current_state == ST_WAIT_FOR_GO) || (button1 && current_state == ST_STOP)) {
+      next_state = ST_FORWARD;
+    }
+    // test override end
 
     current_state = next_state;
   }
