@@ -24,14 +24,15 @@ void set_comm_out(int pin) {
 }
 
 int get_speed(void) {
+  return 30; // test override
   int pins = GPIO_PortInGet(gpioPortC) & 0xc;
   switch (pins) {
     case FIFTY:
-      return 50;
+      return 30;
     case SEVENTY:
-      return 70;
+      return 40;
     case HUNDRED:
-      return 100;
+      return 50;
     default:
       return 0;
   }

@@ -1,11 +1,11 @@
 #include "motor.h"
 
-int turn_left_speed_inner = 40;
-int turn_left_speed_outer = 20;
-int turn_right_speed_inner = 40;
-int turn_right_speed_outer = 20;
-int u_turn_left_speed = 40;
-int u_turn_right_speed = 40;
+int turn_speed_inner = 0;
+int turn_speed_outer = 40;
+int turn_right_speed_inner = 0;
+int turn_right_speed_outer = 40;
+int u_turn_left_speed = 35;
+int u_turn_right_speed = 30;
 
 uint16_t turn_duration = 1500;
 uint16_t u_turn_duration = 2200;
@@ -101,13 +101,20 @@ void motor_stop(void) {
   GPIO_PinOutClear(gpioPortC, BIN2);
 }
 
-void motor_forward(int speed) {
+void motor_forward(int speed, int drift_error) {
   GPIO_PinOutSet(gpioPortC, AIN1);
   GPIO_PinOutClear(gpioPortC, AIN2);
   GPIO_PinOutClear(gpioPortC, BIN1);
   GPIO_PinOutSet(gpioPortC, BIN2);
 
-  motor_set_speed(speed, speed);
+  if (drift_error == 0) {
+    motor_set_speed(speed, speed);
+  } else if (drift_error < 0) {
+    motor_set_speed(speed * ((-1 * drift_error) + 3) / 3, speed * 3 / ((-1 * drift_error) + 3));
+  } else if (drift_error > 0) {
+//    motor_set_speed(speed - (drift_error * 4), speed + (drift_error * 4));
+    motor_set_speed(speed * 3 / (drift_error + 3), speed * (drift_error + 3) / 3);
+  }
 }
 
 void motor_left(void) {
@@ -116,7 +123,7 @@ void motor_left(void) {
   GPIO_PinOutClear(gpioPortC, BIN1);
   GPIO_PinOutSet(gpioPortC, BIN2);
 
-  motor_set_speed(turn_left_speed_inner, turn_left_speed_outer);
+  motor_set_speed(turn_speed_inner, turn_speed_outer);
 }
 
 void motor_right(void) {
@@ -125,7 +132,7 @@ void motor_right(void) {
   GPIO_PinOutSet(gpioPortC, BIN1);
   GPIO_PinOutClear(gpioPortC, BIN2);
 
-  motor_set_speed(turn_right_speed_outer, turn_right_speed_inner);
+  motor_set_speed(turn_speed_outer, turn_speed_inner);
 }
 
 void motor_u_turn(void) {
@@ -138,12 +145,12 @@ void motor_u_turn(void) {
   motor_set_speed(u_turn_left_speed, u_turn_right_speed);
 }
 
-void motor_correct_left_drift(int speed) {
-  motor_set_speed(speed, (speed - 20));
-  Delay(50);
-}
-
-void motor_correct_right_drift(int speed) {
-  motor_set_speed((speed - 20), speed);
-  Delay(50);
-}
+//void motor_correct_left_drift(int speed, int drift_degree) {
+//  motor_set_speed(speed * (drift_degree + 4) / 3, speed * 2 / (drift_degree + 3));
+//  Delay(30);
+//}
+//
+//void motor_correct_right_drift(int speed, int drift_degree) {
+//  motor_set_speed(speed * 2 / (drift_degree + 3), speed * (drift_degree + 4) / 3);
+//  Delay(30);
+//}

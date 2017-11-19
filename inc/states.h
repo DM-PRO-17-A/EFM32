@@ -15,8 +15,8 @@ enum STATES {
   ST_TURN_LEFT,
   ST_TURN_RIGHT,
   ST_U_TURN_1,
-  ST_U_TURN_2,
-  ST_U_TURN_3,
+//  ST_U_TURN_2,
+//  ST_U_TURN_3,
   ST_STOP
 };
 

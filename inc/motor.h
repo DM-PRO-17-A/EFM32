@@ -22,7 +22,7 @@ void motor_set_speed(int left_speed, int right_speed);
 
 void motor_stop(void);
 
-void motor_forward(int speed);
+void motor_forward(int speed, int drift_error);
 
 void motor_left(void);
 
@@ -30,8 +30,8 @@ void motor_right(void);
 
 void motor_u_turn(void);
 
-void motor_correct_left_drift(int speed);
-
-void motor_correct_right_drift(int speed);
+//void motor_correct_left_drift(int speed, int drift_degree);
+//
+//void motor_correct_right_drift(int speed, int drift_degree);
 
 #endif /* MOTOR_H_ */
