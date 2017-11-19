@@ -25,16 +25,16 @@ void step_forward(void) {
   clear_comm_out(CROSSROAD); // to pynq crossroad low
   set_comm_out(BUSY); // to pynq busy high
 
-//  motor_forward(get_speed());
-  motor_forward(50); // test override
+  motor_forward(get_speed());
+//  motor_forward(50); // test override
   Delay(500);
 
   clear_comm_out(BUSY); // to pynq busy low
 }
 
 void forward(void) {
-//  motor_forward(get_speed());
-  motor_forward(50); //test
+  motor_forward(get_speed());
+//  motor_forward(50); //test
 
   uint32_t* sensor_values = get_sensor_values();
 
@@ -45,11 +45,11 @@ void forward(void) {
   }
   // handle drift
   if (detect_left_drift(sensor_values)) {
-//    motor_correct_left_drift(get_speed());
-    motor_correct_left_drift(50); // test override
+    motor_correct_left_drift(get_speed());
+//    motor_correct_left_drift(50); // test override
   } else if (detect_right_drift(sensor_values)) {
-//    motor_correct_right_drift(get_speed());
-    motor_correct_right_drift(50); // test override
+    motor_correct_right_drift(get_speed());
+//    motor_correct_right_drift(50); // test override
   }
 }
 
@@ -58,13 +58,13 @@ void crossroad(void) {
   set_comm_out(CROSSROAD); // to pynq crossroad high
   Delay(500);
 
-//  if (get_start_stop() == STOP) {
-//    next_state = ST_STOP;
-//    return;
-//  }
+  if (get_start_stop() == STOP) {
+    next_state = ST_STOP;
+    return;
+  }
 
-//  switch (get_direction()) {
-  switch (LEFT) { // test override
+  switch (get_direction()) {
+//  switch (LEFT) { // test override
     case LEFT:
       next_state = ST_TURN_LEFT;
       break;
@@ -159,10 +159,10 @@ int main(void)
 
   sensor_init();
 
-  // test override start
-  GPIO_PinModeSet(gpioPortC, 15, gpioModeInputPull, 1);
-  int button1;
-  // test override end
+//  // test override start
+//  GPIO_PinModeSet(gpioPortC, 15, gpioModeInputPull, 1);
+//  int button1;
+//  // test override end
 
   /* Infinite loop */
   while (1) {
@@ -172,8 +172,8 @@ int main(void)
         wait_for_go();
         break;
       case ST_FORWARD:
-        forward();
-//        test(); // test override
+//        forward();
+        test(); // test override
         break;
       case ST_CROSSROAD:
         crossroad();
@@ -198,12 +198,12 @@ int main(void)
         break;
     }
 
-    // test override start
-    button1 = GPIO_PinInGet(gpioPortC, 15);
-    if ((button1 && current_state == ST_WAIT_FOR_GO) || (button1 && current_state == ST_STOP)) {
-      next_state = ST_FORWARD;
-    }
-    // test override end
+//    // test override start
+//    button1 = GPIO_PinInGet(gpioPortC, 15);
+//    if ((button1 && current_state == ST_WAIT_FOR_GO) || (button1 && current_state == ST_STOP)) {
+//      next_state = ST_FORWARD;
+//    }
+//    // test override end
 
     current_state = next_state;
   }
