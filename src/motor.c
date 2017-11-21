@@ -2,10 +2,8 @@
 
 int turn_speed_inner = 0;
 int turn_speed_outer = 40;
-int turn_right_speed_inner = 0;
-int turn_right_speed_outer = 40;
 int u_turn_left_speed = 35;
-int u_turn_right_speed = 30;
+int u_turn_right_speed = 35;
 
 uint16_t turn_duration = 1500;
 uint16_t u_turn_duration = 2200;
@@ -110,6 +108,7 @@ void motor_forward(int speed, int drift_error) {
   if (drift_error == 0) {
     motor_set_speed(speed, speed);
   } else if (drift_error < 0) {
+//    motor_set_speed(speed + (-1 * drift_error * 4), speed - (-1 * drift_error * 4));
     motor_set_speed(speed * ((-1 * drift_error) + 3) / 3, speed * 3 / ((-1 * drift_error) + 3));
   } else if (drift_error > 0) {
 //    motor_set_speed(speed - (drift_error * 4), speed + (drift_error * 4));
@@ -144,13 +143,3 @@ void motor_u_turn(void) {
 
   motor_set_speed(u_turn_left_speed, u_turn_right_speed);
 }
-
-//void motor_correct_left_drift(int speed, int drift_degree) {
-//  motor_set_speed(speed * (drift_degree + 4) / 3, speed * 2 / (drift_degree + 3));
-//  Delay(30);
-//}
-//
-//void motor_correct_right_drift(int speed, int drift_degree) {
-//  motor_set_speed(speed * 2 / (drift_degree + 3), speed * (drift_degree + 4) / 3);
-//  Delay(30);
-//}

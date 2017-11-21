@@ -145,47 +145,6 @@ int detect_drift(uint32_t* sensor_values) {
   return 0;
 }
 
-//int detect_right_drift(uint32_t* sensor_values) {
-//  if ((sensor_values[7] < 1000) &&
-//      (sensor_values[6] < 1000) &&
-//      (sensor_values[5] < 1000) &&
-//      (sensor_values[4] > 1000) &&
-//      (sensor_values[3] < 1000) &&
-//      (sensor_values[2] < 1000) &&
-//      (sensor_values[1] < 1000) &&
-//      (sensor_values[0] < 1000)) {
-//	  return -1;
-//  } else if ((sensor_values[7] < 1000) &&
-//             (sensor_values[6] < 1000) &&
-//             (sensor_values[5] > 1000) &&
-//             (sensor_values[4] > 1000) &&
-//             (sensor_values[3] < 1000) &&
-//             (sensor_values[2] < 1000) &&
-//             (sensor_values[1] < 1000) &&
-//             (sensor_values[0] < 1000)) {
-//    return 2;
-//  } else if ((sensor_values[7] < 1000) &&
-//             (sensor_values[6] > 1000) &&
-//             (sensor_values[5] > 1000) &&
-//             (sensor_values[4] < 1000) &&
-//             (sensor_values[3] < 1000) &&
-//             (sensor_values[2] < 1000) &&
-//             (sensor_values[1] < 1000) &&
-//             (sensor_values[0] < 1000)) {
-//    return 3;
-//  } else if ((sensor_values[7] < 1000) &&
-//             (sensor_values[6] > 1000) &&
-//             (sensor_values[5] > 1000) &&
-//             (sensor_values[4] > 1000) &&
-//             (sensor_values[3] < 1000) &&
-//             (sensor_values[2] < 1000) &&
-//             (sensor_values[1] < 1000) &&
-//             (sensor_values[0] < 1000)) {
-//    return 4;
-//  }
-//  return 0;
-//}
-
 int detect_road(uint32_t* sensor_values) {
   return (sensor_values[0] < 1000) &&
 		 (sensor_values[1] < 1000) &&

@@ -14,8 +14,6 @@ int detect_crossroad(uint32_t* sensor_values);
 
 int detect_drift(uint32_t* sensor_values);
 
-//int detect_right_drift(uint32_t* sensor_values);
-
 int detect_road(uint32_t* sensor_values);
 
 #endif /* TAPE_H_ */
